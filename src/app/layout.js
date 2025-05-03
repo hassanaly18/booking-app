@@ -24,7 +24,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Navbar/>
-      <div className="container mx-auto py-8">
+      <div >
       {children}
       </div>
         

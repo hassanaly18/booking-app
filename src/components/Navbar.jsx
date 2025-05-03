@@ -47,6 +47,9 @@ const Navbar = () => {
         <Link className="text-gray-200 hover:text-blue-500" href="/events">
           Events
         </Link>
+        <Link className="text-gray-200 hover:text-blue-500" href="/events/new">
+          Make New Event
+        </Link>
         <Link className="text-gray-200 hover:text-blue-500" href="/bookings">
           Bookings
         </Link>

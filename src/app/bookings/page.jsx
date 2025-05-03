@@ -7,9 +7,12 @@ const BookingPage = () => {
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState("");
   const [loading, setLoading] = useState(false);
+  const [userBookings, setUserBookings] = useState([])
+  const [user, setUser] = useState(null)
 
   useEffect(() => {
     fetchEvents();
+    fetchUserAndBookings()
   }, []);
 
   async function fetchEvents() {
@@ -20,6 +23,25 @@ const BookingPage = () => {
       return;
     } else {
       setEvents(data);
+    }
+  }
+
+  async function fetchUserAndBookings(){
+    const {data: userData} = await supabase.auth.getUser()
+
+    const user = userData?.user;
+    setUser(user)
+
+    if(user){
+      const {data: bookings, error} = await supabase.from("bookings").select(",event:events(*)").eq("user_id", user.id)
+      if(error){
+        console.log(error.message)
+        return
+      }
+      else{
+        console.log(bookings)
+        setUserBookings(bookings)
+      }
     }
   }
 
@@ -55,7 +77,7 @@ const BookingPage = () => {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <div className="bg-gray-900 rounded-md shadow-md p-8 w-full max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">Book An Event</h1>
         <form className="space-y-4" onSubmit={handleBooking}>
@@ -90,6 +112,37 @@ const BookingPage = () => {
             {loading ? "Booking..." : "Book Now"}
           </button>
         </form>
+      </div>
+
+      {/*My bookings section*/}
+      <div className="w-full max-w-4xl mt-10">
+        <h2>
+          My Bookings
+        </h2>
+
+        {userBookings.length===0 ? (<p>No bookings yet</p>) : (
+          <div className="grid gap-4">
+            {userBookings.map((booking)=>(
+              <div key={booking.id}>
+                <h3>
+                  {booking.event.title}
+                </h3>
+                <p>
+                  {booking.event.description}
+                </p>
+                <p>
+                  {booking.event.location}
+                </p>
+                <p>
+                  {new Date(booking.event.date).toLocaleDateString()}
+                </p>
+                <p>
+                  Booked on: {new Date(booking.booking_date).toLocaleDateString()}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
