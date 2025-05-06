@@ -13,6 +13,7 @@ const BookingPage = () => {
   useEffect(() => {
     fetchEvents();
     fetchUserAndBookings()
+    
   }, []);
 
   async function fetchEvents() {
@@ -33,7 +34,7 @@ const BookingPage = () => {
     setUser(user)
 
     if(user){
-      const {data: bookings, error} = await supabase.from("bookings").select(",event:events(*)").eq("user_id", user.id)
+      const {data: bookings, error} = await supabase.from("bookings").select("*,event:events(*)").eq("user_id", user.id)
       if(error){
         console.log(error.message)
         return
@@ -74,10 +75,11 @@ const BookingPage = () => {
     }
 
     setLoading(false);
+    fetchUserAndBookings()
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="min-h-screen mt-12 flex flex-col items-center justify-center min-h-screen">
       <div className="bg-gray-900 rounded-md shadow-md p-8 w-full max-w-lg">
         <h1 className="text-2xl font-bold mb-6 text-center">Book An Event</h1>
         <form className="space-y-4" onSubmit={handleBooking}>
@@ -116,18 +118,18 @@ const BookingPage = () => {
 
       {/*My bookings section*/}
       <div className="w-full max-w-4xl mt-10">
-        <h2>
+        <h2 className="text-3xl font-bold mb-6 text-center text-gray-200">
           My Bookings
         </h2>
 
         {userBookings.length===0 ? (<p>No bookings yet</p>) : (
-          <div className="grid gap-4">
+          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {userBookings.map((booking)=>(
-              <div key={booking.id}>
-                <h3>
+              <div className="p-4 border rounded-md " key={booking.id}>
+                <h3 className="text-xl font-semibold text-gray-200">
                   {booking.event.title}
                 </h3>
-                <p>
+                <p className="text-gray-400">
                   {booking.event.description}
                 </p>
                 <p>
